@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using TaskManager45.Models;
 
 namespace TaskManager45.Controllers
 {
@@ -13,6 +14,7 @@ namespace TaskManager45.Controllers
 
         public ActionResult Index()
         {
+            ViewData["Tasks"] = new TaskRepository().GetTasks();
             return View();
         }
 

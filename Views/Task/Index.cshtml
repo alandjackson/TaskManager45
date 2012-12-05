@@ -1,6 +1,8 @@
 ﻿@{
     ViewBag.Title = "Tasks";
 }
+@using System.Collections.Generic;
+@using TaskManager45.Models;
 
 <style type="text/css">
     table.clickable-rows tbody tr:hover
@@ -50,34 +52,19 @@
     <input id="newTaskTextBox" type="text" value="Click here to add a new task" class="inactive"
                 onfocus="startNewTask();" onkeypress="return newTaskKeyPress(event);" onblur="leaveNewTask();" />
 </p>
+
+@{IEnumerable<Task> tasks = (IEnumerable<Task>) ViewData["Tasks"]; }
 <table id="open-tasks-table" class="clickable-rows">
     <tbody>
-        <tr onclick="$('#details-row-1').toggle();">
-            <td>
-                <input type="checkbox" />
-            </td>
-            <td>
-                <span>Move water monitor to production (+waiting on sephra to test)</span>
-            </td>
-        </tr>
-        <tr style="display:none;" id="details-row-1">
-            <td></td>
-            <td>These are details</td>
-        </tr>
-
-        <tr onclick="$('#details-row-2').toggle();">
-            <td>
-                <input type="checkbox" />
-            </td>
-            <td>
-                <span>R&D wellplan security access</span>
-            </td>
-        </tr>
-        <tr style="display:none;" id="details-row-2">
-            <td></td>
-            <td>These are details</td>
-        </tr>
+        @foreach (var task in tasks)
+        {
             <tr>
+                <td><input type="checkbox" /></td>
+                <td><span>@task.Description</span></td>
+            </tr>
+        }
+
+        <tr>
             <td>
                 <input type="checkbox" />
             </td>
@@ -112,7 +99,7 @@
 
 <table class="clickable-rows">
     <tbody>
-        <tr onclick="$('#details-row-1').toggle();">
+        <tr onclick="$('#details-row-5').toggle();">
             <td>
                 <input type="checkbox" />
             </td>
@@ -120,12 +107,12 @@
                 <span>Move water monitor to production (+waiting on sephra to test)</span>
             </td>
         </tr>
-        <tr style="display:none;" id="details-row-1">
+        <tr style="display:none;" id="details-row-5">
             <td></td>
             <td>These are details</td>
         </tr>
 
-        <tr onclick="$('#details-row-2').toggle();">
+        <tr onclick="$('#details-row-4').toggle();">
             <td>
                 <input type="checkbox" />
             </td>
@@ -133,7 +120,7 @@
                 <span>R&D wellplan security access</span>
             </td>
         </tr>
-        <tr style="display:none;" id="details-row-2">
+        <tr style="display:none;" id="details-row-4">
             <td></td>
             <td>These are details</td>
         </tr>
