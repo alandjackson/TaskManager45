@@ -1,0 +1,142 @@
+﻿@{
+    ViewBag.Title = "Tasks";
+}
+
+<style type="text/css">
+    table.clickable-rows tbody tr:hover
+    {
+        background-color: #E2E2E2;
+        cursor: pointer;
+    }
+
+    #newTaskTextBox.inactive
+    {
+        color: #aaa;
+    }
+
+    #newTaskTextBox.active
+    {
+        color: #333;
+    }
+</style>
+<script type="text/javascript">
+    function startNewTask() {
+        $('#newTaskTextBox').addClass('active').removeClass('inactive');
+        if ($('#newTaskTextBox').val() == 'Click here to add a new task') {
+            $('#newTaskTextBox').val('');
+        }
+    }
+
+    function leaveNewTask() {
+        $('#newTaskTextBox').addClass('inactive').removeClass('active');
+        if ($('#newTaskTextBox').val() == '') {
+            $('#newTaskTextBox').val('Click here to add a new task');
+        }
+    }
+
+    function newTaskKeyPress(e) {
+        if (e.keyCode == 13) {
+            $('#open-tasks-table tbody').prepend(
+                '<tr><td><input type="checkbox" /></td><td>' +
+                $('#newTaskTextBox').val() + '</td></tr>');
+            $('#newTaskTextBox').val('');
+            return false;
+        }
+    }
+</script>
+
+<h2>Open Tasks</h2>
+<p>
+    <input id="newTaskTextBox" type="text" value="Click here to add a new task" class="inactive"
+                onfocus="startNewTask();" onkeypress="return newTaskKeyPress(event);" onblur="leaveNewTask();" />
+</p>
+<table id="open-tasks-table" class="clickable-rows">
+    <tbody>
+        <tr onclick="$('#details-row-1').toggle();">
+            <td>
+                <input type="checkbox" />
+            </td>
+            <td>
+                <span>Move water monitor to production (+waiting on sephra to test)</span>
+            </td>
+        </tr>
+        <tr style="display:none;" id="details-row-1">
+            <td></td>
+            <td>These are details</td>
+        </tr>
+
+        <tr onclick="$('#details-row-2').toggle();">
+            <td>
+                <input type="checkbox" />
+            </td>
+            <td>
+                <span>R&D wellplan security access</span>
+            </td>
+        </tr>
+        <tr style="display:none;" id="details-row-2">
+            <td></td>
+            <td>These are details</td>
+        </tr>
+            <tr>
+            <td>
+                <input type="checkbox" />
+            </td>
+            <td onclick="$('#details-row-3').toggle();">
+                <span>Fix BEL app in dev</span>
+            </td>
+        </tr>
+        <tr id="details-row-3">
+            <td></td>
+            <td>
+                <div>
+                    <div><strong>Comments</strong></div>
+                    <p>Here are some comments</p>
+                </div>
+                <div>
+                    <div><strong>Files</strong></div>
+                    <div>
+                        <ul>
+                            <li><a href="file://Y:/Temp/taskmanager45_repository/RE%20Backup%20Exclusion%20List%20Name.txt">RE Backup Exclusion List Name.txt</a></li>
+                        </ul>
+
+                    </div>
+                </div>
+
+            </td>
+        </tr>
+
+    </tbody>
+</table>
+
+<h2>Completed Tasks</h2>
+
+<table class="clickable-rows">
+    <tbody>
+        <tr onclick="$('#details-row-1').toggle();">
+            <td>
+                <input type="checkbox" />
+            </td>
+            <td>
+                <span>Move water monitor to production (+waiting on sephra to test)</span>
+            </td>
+        </tr>
+        <tr style="display:none;" id="details-row-1">
+            <td></td>
+            <td>These are details</td>
+        </tr>
+
+        <tr onclick="$('#details-row-2').toggle();">
+            <td>
+                <input type="checkbox" />
+            </td>
+            <td>
+                <span>R&D wellplan security access</span>
+            </td>
+        </tr>
+        <tr style="display:none;" id="details-row-2">
+            <td></td>
+            <td>These are details</td>
+        </tr>
+
+    </tbody>
+</table>
