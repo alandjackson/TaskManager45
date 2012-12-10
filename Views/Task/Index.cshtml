@@ -10,6 +10,19 @@
         background-color: #E2E2E2;
         cursor: pointer;
     }
+    tr.selected
+    {
+        background-color: lightyellow;
+    }
+    tr #details
+    {
+        display: none;
+    }
+    tr.selected #details
+    {
+        display: block;
+    }
+    
 
     #newTaskTextBox.inactive
     {
@@ -20,8 +33,21 @@
     {
         color: #333;
     }
+
+    td
+    {
+    vertical-align: text-top;
+    }
+
 </style>
 <script type="text/javascript">
+
+    $(document).ready(function () {
+        $('tr .description-cell').click(function () {
+            $(this).parent().parent().toggleClass('selected');
+        });
+    });
+
     function startNewTask() {
         $('#newTaskTextBox').addClass('active').removeClass('inactive');
         if ($('#newTaskTextBox').val() == 'Click here to add a new task') {
@@ -36,43 +62,114 @@
         }
     }
 
+    function updateTaskCompleted(id) {
+        var checkboxId = '#task-row-' + id + '-completed';
+        var isChecked = $(checkboxId).is(":checked");
+        //alert(checkboxId + ' checked: ' + isChecked);
+
+        $.ajax({
+            type: "POST",
+            url: "/Task/UpdateCompleted/" + id,
+            dataType: "json",
+            async: true,
+            data: $('#existingTasksForm').serialize(),
+            success: function () {
+                if (isChecked) {
+                    $('#task-row-' + id).hide('fast', function () {
+                        $(this).prependTo('#completed-tasks-table tbody').fadeIn('slow')
+                    });
+                } else {
+                    $('#task-row-' + id).hide('fast', function () {
+                        $(this).prependTo('#open-tasks-table tbody').fadeIn('slow')
+                    });
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                alert(textStatus + ": " + errorThrown);
+            }
+        });
+
+
+
+    }
+
+    function deleteTask(id) {
+        if (!confirm("Are you sure you want to delete task " + id + "?")) {
+            return;
+        }
+        $.ajax({
+            type: "POST",
+            url: "/Task/Delete/" + id,
+            dataType: "json",
+            async: true,
+            success: function () {
+                $('#task-row-' + id).remove();
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                alert(textStatus + ": " + errorThrown);
+            }
+        });
+    }
+
     function newTaskKeyPress(e) {
         if (e.keyCode == 13) {
-            $('#open-tasks-table tbody').prepend(
-                '<tr><td><input type="checkbox" /></td><td>' +
-                $('#newTaskTextBox').val() + '</td></tr>');
-            $('#newTaskTextBox').val('');
+            var desc = $('#newTaskTextBox').val();
+            $.ajax({
+                type: "POST",
+                url: "/Task/Create",
+                dataType: "json",
+                async: true,
+                data: $('#newTaskForm').serialize(),
+                success: function () {
+                    $('#open-tasks-table tbody').prepend(
+                        '<tr><td><input type="checkbox" /></td><td>' +
+                        desc + '</td></tr>');
+                    $('#newTaskTextBox').val('');
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    alert(textStatus + ": " + errorThrown);
+                }
+            });
+
             return false;
         }
     }
 </script>
 
 <h2>Open Tasks</h2>
-<p>
-    <input id="newTaskTextBox" type="text" value="Click here to add a new task" class="inactive"
+<form id="newTaskForm">
+    <p>
+        <input id="newTaskTextBox" type="text" name="description" value="Click here to add a new task" class="inactive"
                 onfocus="startNewTask();" onkeypress="return newTaskKeyPress(event);" onblur="leaveNewTask();" />
-</p>
+    </p>
+</form>
 
 @{IEnumerable<Task> tasks = (IEnumerable<Task>) ViewData["Tasks"]; }
+<form id="existingTasksForm">
+
 <table id="open-tasks-table" class="clickable-rows">
     <tbody>
-        @foreach (var task in tasks)
+        @foreach (var task in tasks.Where(t => !t.CompletedAt.HasValue))
         {
-            <tr>
-                <td><input type="checkbox" /></td>
-                <td><span>@task.Description</span></td>
+            <tr id="task-row-@task.TaskId">
+                <td><input name="task-row-@task.TaskId-completed" type="checkbox" id="task-row-@task.TaskId-completed" 
+                     onclick="updateTaskCompleted(@task.TaskId);" /></td>
+                <td >
+                    <div class="description-cell">@task.Description</div>
+                    <div id="details"><a href="javascript:deleteTask(@task.TaskId);">Delete</a></div>
+                </td>
             </tr>
         }
 
-        <tr>
+@*        <tr>
             <td>
                 <input type="checkbox" />
             </td>
             <td onclick="$('#details-row-3').toggle();">
                 <span>Fix BEL app in dev</span>
             </td>
-        </tr>
-        <tr id="details-row-3">
+        </tr>*@
+@*        <tr id="details-row-3">
             <td></td>
             <td>
                 <div>
@@ -90,40 +187,28 @@
                 </div>
 
             </td>
-        </tr>
+        </tr>*@
 
     </tbody>
 </table>
 
 <h2>Completed Tasks</h2>
 
-<table class="clickable-rows">
+<table id="completed-tasks-table" class="clickable-rows">
     <tbody>
-        <tr onclick="$('#details-row-5').toggle();">
-            <td>
-                <input type="checkbox" />
-            </td>
-            <td>
-                <span>Move water monitor to production (+waiting on sephra to test)</span>
-            </td>
-        </tr>
-        <tr style="display:none;" id="details-row-5">
-            <td></td>
-            <td>These are details</td>
-        </tr>
-
-        <tr onclick="$('#details-row-4').toggle();">
-            <td>
-                <input type="checkbox" />
-            </td>
-            <td>
-                <span>R&D wellplan security access</span>
-            </td>
-        </tr>
-        <tr style="display:none;" id="details-row-4">
-            <td></td>
-            <td>These are details</td>
-        </tr>
+        @foreach (var task in tasks.Where(t => t.CompletedAt.HasValue))
+        {
+            <tr id="task-row-@task.TaskId">
+                <td><input name="task-row-@task.TaskId-completed" type="checkbox" id="task-row-@task.TaskId-completed" 
+                     onclick="updateTaskCompleted(@task.TaskId);" checked="checked" /></td>
+                <td >
+                    <div class="description-cell">@task.Description</div>
+                    <div id="details"><a href="javascript:deleteTask(@task.TaskId);">Delete</a></div>
+                </td>
+            </tr>
+        }
 
     </tbody>
 </table>
+
+</form>
