@@ -13,9 +13,9 @@ namespace TaskManager45.Controllers
         //
         // GET: /Task/
 
-        public ActionResult Index()
+        public ActionResult Index(string taskType)
         {
-            ViewData["Tasks"] = new TaskRepository().GetTasks();
+            ViewData["Tasks"] = new TaskRepository().GetTasksByType(taskType);
             return View();
         }
 
@@ -68,5 +68,16 @@ namespace TaskManager45.Controllers
             }
             return new EmptyResult();
         }
+
+        public ActionResult Today()
+        {
+            return View();
+        }
+
+        public ActionResult History()
+        {
+            return View();
+        }
+
     }
 }

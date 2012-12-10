@@ -18,6 +18,17 @@ namespace TaskManager45.Models
             }
         }
 
+        public IEnumerable<Task> GetTasksByType(string taskType)
+        {
+            if (string.IsNullOrWhiteSpace(taskType)) taskType = "todo";
+
+            using (var connection = GetSqlConnection())
+            {
+                return connection.Query<Task>("select * from Task Where (IsDeleted is null or IsDeleted = 0) and (TaskType = @TaskType or (@TaskType = 'todo' and TaskType is null)) order by CreatedAt Desc", new { TaskType = taskType }); 
+            }
+        }
+
+
         public Task GetTask(int id)
         {
             using (var connection = GetSqlConnection())

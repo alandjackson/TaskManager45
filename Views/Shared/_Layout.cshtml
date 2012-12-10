@@ -21,11 +21,13 @@
                     </section>
                     <nav>
                         <ul id="menu">
-                            <li>@Html.ActionLink("Open", "Index", "Task", new { tasktype = "open" }, new { })</li>
-                            <li>@Html.ActionLink("Someday", "Index", "Task", new { tasktype = "open" }, new { })</li>
-                            <li>@Html.ActionLink("Notes", "Index", "Task", new { tasktype = "open" }, new { })</li>
-                            <li>@Html.ActionLink("Project", "Index", "Task", new { tasktype = "open" }, new { })</li>
-                            <li>@Html.ActionLink("History", "Index", "Task", new { tasktype = "open" }, new { })</li>
+                            <li>@Html.ActionLink("Today", "Today", "Task", new { }, new { })</li>
+                            <li>@Html.ActionLink("History", "History", "Task", new { }, new { })</li>
+                            <li>@Html.ActionLink("Todo", "Index", "Task", new { tasktype = "todo" }, new { })</li>
+                            <li>@Html.ActionLink("Waiting", "Index", "Task", new { tasktype = "waiting" }, new { })</li>
+                            <li>@Html.ActionLink("Someday", "Index", "Task", new { tasktype = "someday" }, new { })</li>
+                            <li>@Html.ActionLink("Notes", "Index", "Task", new { tasktype = "note" }, new { })</li>
+                            <li>@Html.ActionLink("Project", "Index", "Task", new { tasktype = "project" }, new { })</li>
                         </ul>
                     </nav>
                 </div>
